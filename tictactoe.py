@@ -14,21 +14,18 @@ def board_string(board):
     # prints with column numbers and row letters for easy input of cell
     row_length = int(math.sqrt(len(board)))
     board_str = ''
-    board_to_print = [' '] * len(board)
-    for i in range(len(board)):
-        if board[i] == 1:
-            board_to_print[i] = 'x'
-        elif board[i] == -1:
-            board_to_print[i] = 'o'
-        else:
-            board_to_print[i] = ' '
     for k in range(row_length+1):
         board_str += ' ' + str(k) + ' '
     board_str += '\n'
     for i in range(row_length):
         row_string = ' ' + chr(65 + i) + ' '
         for j in range(row_length):
-            row_string += '[' + str(board_to_print[i*row_length + j]) + ']'
+            marker = ' '
+            if board[i*row_length + j] == 1:
+                marker = 'x'
+            elif board[i*row_length + j] == -1:
+                marker = 'o'
+            row_string += '[' + marker + ']'
         board_str += row_string + '\n'
     return board_str
 
