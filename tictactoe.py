@@ -1,148 +1,129 @@
-# Author: Heidi Kasemir
+import math
+import random
+
 BOARD_SIZE = 3
 
-alpha_numeric = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F'}
-key_list = list(alpha_numeric.keys())
-value_list = list(alpha_numeric.values())
-
-
 def create_board(size):
-    board = []
-    for i in range(size):
-        row = [" "] * size
-        board.append(row)
-    return board
+    # Creates 1-dimensional game board for storing played values. 0 is empty,
+    # -1 is the computer played value, 1 is the player value.
+    return [0]*size**2
 
 
-def print_board(board):
-    first_row = ""
-    for k in range(len(board)+1):
-        first_row += ' ' + str(k) + ' '
-    print(first_row)
+def board_string(board):
+    # converts the numeric values of the game board to 'x', 'o', and blank space
+    # prints with column numbers and row letters for easy input of cell
+    row_length = int(math.sqrt(len(board)))
+    board_str = ''
+    board_to_print = [' '] * len(board)
     for i in range(len(board)):
-        row_string = ' ' + alpha_numeric[i] + ' '
-        for j in range(len(board)):
-            row_string += '[' + board[i][j] + ']'
-        print(row_string)
-
-
-def get_player_key(player):
-    key = input("What is " + player + "'s symbol (X/O)? ")
-    if len(key) > 1:
-        key = key[0]
-        print("We're just going to keep the first character of that: " + key)
-    return key
+        if board[i] == 1:
+            board_to_print[i] = 'x'
+        elif board[i] == -1:
+            board_to_print[i] = 'o'
+        else:
+            board_to_print[i] = ' '
+    for k in range(row_length+1):
+        board_str += ' ' + str(k) + ' '
+    board_str += '\n'
+    for i in range(row_length):
+        row_string = ' ' + chr(65 + i) + ' '
+        for j in range(row_length):
+            row_string += '[' + str(board_to_print[i*row_length + j]) + ']'
+        board_str += row_string + '\n'
+    return board_str
 
 
 def get_column(player, board):
-    column_str = input(player + " choose a column (1, 2, etc): ")
-    try:
-        column = int(column_str) - 1
-    except:
-        print("Sorry, please input a number between 1 and " + str(len(board)))
-        column = get_column(player, board)
-    return column
+    row_length = int(math.sqrt(len(board)))
+    column_str = input(player + ' choose a column (1, 2, etc): ')
+    while True:
+        if column_str.isnumeric() and\
+           int(column_str) - 1 in range(row_length):
+            column = int(column_str) - 1
+            return column
+        else:
+            column_str = input('Sorry, please input a number between 1 and ' +
+                               str(row_length) + ': ')
 
 
 def get_row(player, board):
-    try:
-        row_str = input(player + " choose a row (A, B, etc): ").upper()
-        row_number = key_list[value_list.index(row_str)]
-    except:
-        print("Sorry, please input a letter between A and " +
-              str(value_list[len(board)-1]))
-        row_number = get_row(player, board)
-    return row_number
+    row_length = int(math.sqrt(len(board)))
+    row_str = input(player + ' choose a row (A, B, etc): ').upper()
+    while True:
+        if ord(row_str) - 65 in range(row_length):
+            row_int = ord(row_str) - 65
+            return row_int
+        else:
+            row_str = input('Sorry, please input a letter between A and ' +
+                            str(chr(64 + row_length)) + ': ').upper()
 
+    
+def index_from_row_and_col(row, col, size):
+        return row*size + col
 
-def player_turn(player, player_key, board):
-    column = get_column(player, board)
-    while column not in range(len(board)):
-        print("Value not in range, please input a number between 1 and " +
-              str(len(board)))
-        column = get_column(player, board)
-    row = get_row(player, board)
-    while row not in range(len(board)):
-        print("Not in range, please input a letter between A and " +
-              str(value_list[len(board)-1]))
-        row = get_row(player, board)
-    while board[row][column] != " ":
-        print("Sorry, that spot's been taken, try again: ")
-        column = get_column(player, board)
-        row = get_row(player, board)
-    else:
-        board[row][column] = player_key
-        print_board(board)
+def game_turn(player, board):
+    if player == 'Player':
+        size = int(math.sqrt(len(board)))
+        while True:
+            column = get_column(player, board)
+            row = get_row(player, board)
+            index = index_from_row_and_col(row, column, size)
+            if board[index] == 0:
+                board[index] = 1
+                return board
+            else:
+                print('Sorry, that spot\'s been taken, try again: ')
+    elif player == 'Computer':
+        while True:
+            index = random.randint(0, len(board)-1)
+            if board[index] == 0:
+                board[index] = -1
+                return board
 
 
 def check_win(board):
-    # check for 3 in a row
-    win = False
-    for i in range(len(board)):
-        key = board[i][0]
-        if key != " " and\
-           board[i][1] == key and\
-           board[i][2] == key:
-            print(str(key) + " got three in a row!")
-            win = True
-            break
-        else:
-            next
-    if win is False:
-        # check for 3 in a column if no 3 in a row
-        for j in range(len(board)):
-            key = board[0][j]
-            if key != " " and\
-               board[1][j] == key and\
-               board[2][j] == key:
-                print(str(key) + " got three in a column!")
-                win = True
-                break
-            else:
-                next
-    if win is False:
-        # check for diagonals
-        key = board[0][0]
-        if key != " " and\
-           board[1][1] == key and\
-           board[2][2] == key:
-            print(str(key) + " got three in a diagonal!")
-            win = True
-        key = board[2][0]
-        if key != " " and\
-           board[1][1] == key and\
-           board[0][2] == key:
-            print(str(key) + " got three in a diagonal!")
-            win = True
-    return win
-
-player1_key = get_player_key("Player 1")
-player2_key = get_player_key("Player 2")
-
-while player1_key == player2_key:
-    print("Sorry, Player 1 and Player 2 can't be the same, try again:")
-    player2_key = get_player_key("Player 2")
-
-print("Welcome to Heidi's Tic-Tac-Toe game!")
-win = False
+    # To be called after player and computer turns. Returns True if 3 in a row 
+    # is made from turn just played. Returns False if no win is detected, and 
+    # returns None if there is a tie.
+    winning_paths = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+    ]
+    for path in winning_paths:
+        check_indices = 0
+        for i in range(len(path)):
+            check_indices += board[path[i]]
+        if check_indices == 3 or check_indices == -3:
+            return True
+    # Check for full board if no wins, indicates a tie
+    if 0 not in board:
+        return None
+    return False
+        
+        
+player_key = 'x' 
+computer_key = 'o'
+print('Welcome to Heidi\'s Tic-Tac-Toe game!')
 game_board = create_board(BOARD_SIZE)
-print_board(game_board)
-win = check_win(game_board)
+print(board_string(game_board))
 
-while win is False:
-    full_row = 0
-    player_turn("Player 1", player1_key, game_board)
-    win = check_win(game_board)
-    if win is True:
-        print("Player 1 wins!")
-        break
-    for row in game_board:
-        if " " not in row:
-            full_row += 1
-    if full_row == BOARD_SIZE:
-        print("Catscratch! Nobody wins.")
-        break
-    player_turn("Player 2", player2_key, game_board)
-    win = check_win(game_board)
-    if win is True:
-        print("Player 2 wins!")
+players = ['Player', 'Computer']
+game = True
+while game is True:
+    for player in players:
+        game_board = game_turn(player, game_board)
+        print(board_string(game_board))
+        if check_win(game_board):
+            print(player + ' wins!')
+            game = False
+            break
+        if check_win(game_board) is None:
+            print('Catscratch! Nobody wins.')
+            game = False
+            break
