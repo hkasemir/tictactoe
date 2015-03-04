@@ -2,6 +2,9 @@ import math
 import random
 
 BOARD_SIZE = 3
+PLAYER_KEY = 'x'
+COMPUTER_KEY = 'o'
+EMPTY_KEY = ' '
 
 def create_board(size):
     # Creates 1-dimensional game board for storing played values. 0 is empty,
@@ -20,12 +23,12 @@ def board_string(board):
     for i in range(row_length):
         row_string = ' ' + chr(65 + i) + ' '
         for j in range(row_length):
-            marker = ' '
+            key = EMPTY_KEY
             if board[i*row_length + j] == 1:
-                marker = 'x'
+                key = PLAYER_KEY
             elif board[i*row_length + j] == -1:
-                marker = 'o'
-            row_string += '[' + marker + ']'
+                key = COMPUTER_KEY
+            row_string += '[' + key + ']'
         board_str += row_string + '\n'
     return board_str
 
@@ -104,8 +107,7 @@ def check_win(board):
     return False
         
         
-player_key = 'x' 
-computer_key = 'o'
+
 print('Welcome to Heidi\'s Tic-Tac-Toe game!')
 game_board = create_board(BOARD_SIZE)
 print(board_string(game_board))
