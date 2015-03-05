@@ -21,6 +21,7 @@ def board_to_string(board):
     for k in range(row_length+1):
         board_str += ' ' + str(k) + ' '
     board_str += '\n'
+
     for i in range(row_length):
         row_string = ' ' + chr(65 + i) + ' '
         for j in range(row_length):
@@ -78,42 +79,50 @@ def make_move(row, col, board, player):
 
 def get_choice(player, board):
     size = int(math.sqrt(len(board)))
+
     if player == 'Player':
         column = get_column(board)
         row = get_row(board)
+
     elif player == 'Computer':
         column = random.randint(0, size-1)
         row = random.randint(0, size-1)
     return column, row
-    
 
 
 def game_turn(player, board):
     while True:
         column, row = get_choice(player, board)
+
         if valid_move(row, column, board):
             make_move(row, column, board, player)
             return board
+
         if player == 'Player':
             print('Sorry, that spot\'s been taken, try again: ')
 
+WINNING_PATHS = [
+    # rows
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+
+    # columns
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+
+    # diagonals
+    [0, 4, 8],
+    [2, 4, 6]
+]
 
 
 def check_win(board):
     # To be called after player and computer turns. Returns True if 3 in a row
     # is made from turn just played. Returns False if no win is detected, and
     # returns None if there is a tie.
-    winning_paths = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ]
-    for path in winning_paths:
+    for path in WINNING_PATHS:
         check_sum = 0
         for i in range(len(path)):
             check_sum += board[path[i]]
