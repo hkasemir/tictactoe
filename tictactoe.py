@@ -125,11 +125,12 @@ while game_complete is False:
     for player in players:
         game_board = game_turn(player, game_board)
         print(board_to_string(game_board))
-        if check_win(game_board):
+        turn_result = check_win(game_board)
+        if turn_result:
             print(player + ' wins!')
             game_complete = True
             break
-        if check_win(game_board) is None:
+        if turn_result is None:
             print('Catscratch! Nobody wins.')
             game_complete = True
             break
