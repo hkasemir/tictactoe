@@ -34,11 +34,11 @@ def board_to_string(board):
     return board_str
 
 
-def get_column(player, board):
+def get_column(board):
     row_length = int(math.sqrt(len(board)))
 
     while True:
-        column_str = input(player + ' choose a column (1, 2, etc): ')
+        column_str = input('Choose a column (1, 2, etc): ')
 
         if column_str.isnumeric() and\
            int(column_str) - 1 in range(row_length):
@@ -48,11 +48,11 @@ def get_column(player, board):
               str(row_length) + ': ')
 
 
-def get_row(player, board):
+def get_row(board):
     row_length = int(math.sqrt(len(board)))
 
     while True:
-        row_str = input(player + ' choose a row (A, B, etc): ').upper()
+        row_str = input('Choose a row (A, B, etc): ').upper()
 
         if ord(row_str) - 65 in range(row_length):
             return ord(row_str) - 65
@@ -66,35 +66,37 @@ def valid_move(row, col, board):
     index = row*size + col
     return board[index] == 0
 
-    
-def make_move(row, col, board, key):
+
+def make_move(row, col, board, player):
     size = int(math.sqrt(len(board)))
     index = row*size + col
-    board[index] = key
+    if player == 'Player':
+        board[index] = 1
+    elif player == 'Computer':
+        board[index] = -1
+
+
+def get_choice(player, board):
+    size = int(math.sqrt(len(board)))
+    if player == 'Player':
+        column = get_column(board)
+        row = get_row(board)
+    elif player == 'Computer':
+        column = random.randint(0, size-1)
+        row = random.randint(0, size-1)
+    return column, row
+    
 
 
 def game_turn(player, board):
-    size = int(math.sqrt(len(board)))
-    if player == 'Player':
-
-        while True:
-            column = get_column(player, board)
-            row = get_row(player, board)
-
-            if valid_move(row, column, board):
-                make_move(row, column, board, 1)
-                return board
-
+    while True:
+        column, row = get_choice(player, board)
+        if valid_move(row, column, board):
+            make_move(row, column, board, player)
+            return board
+        if player == 'Player':
             print('Sorry, that spot\'s been taken, try again: ')
 
-    elif player == 'Computer':
-        while True:
-            column = random.randint(0, size-1)
-            row = random.randint(0, size-1)
-
-            if valid_move(row, column, board):
-                make_move(row, column, board, -1)
-                return board
 
 
 def check_win(board):
@@ -131,6 +133,7 @@ players = ['Player', 'Computer']
 game_complete = False
 while game_complete is False:
     for player in players:
+        print('Turn: ' + player)
         game_board = game_turn(player, game_board)
         print(board_to_string(game_board))
         turn_result = check_win(game_board)
