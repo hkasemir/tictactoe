@@ -109,6 +109,7 @@ def game_turn(player, board):
         if player == 'Player':
             print('Sorry, that spot\'s been taken, try again: ')
 
+
 WINNING_PATHS = [
     # rows
     [0, 1, 2],
