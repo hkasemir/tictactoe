@@ -15,7 +15,7 @@ def create_board(size):
 
 def board_to_string(board):
     # converts the numeric values of the game board to 'x', 'o', and blank
-    # space prints with column numbers and row letters for easy input of cell
+    # space. Adds column numbers and row letters for easy input of cell
     row_length = int(math.sqrt(len(board)))
     board_str = ''
     for k in range(row_length+1):
@@ -36,27 +36,25 @@ def board_to_string(board):
 
 def get_column(player, board):
     row_length = int(math.sqrt(len(board)))
-    column_str = input(player + ' choose a column (1, 2, etc): ')
     while True:
+        column_str = input(player + ' choose a column (1, 2, etc): ')
         if column_str.isnumeric() and\
            int(column_str) - 1 in range(row_length):
             column = int(column_str) - 1
             return column
-        else:
-            column_str = input('Sorry, please input a number between 1 and ' +
-                               str(row_length) + ': ')
+        print('Sorry, please input a number between 1 and ' +
+              str(row_length) + ': ')
 
 
 def get_row(player, board):
     row_length = int(math.sqrt(len(board)))
-    row_str = input(player + ' choose a row (A, B, etc): ').upper()
     while True:
+        row_str = input(player + ' choose a row (A, B, etc): ').upper()
         if ord(row_str) - 65 in range(row_length):
             row_int = ord(row_str) - 65
             return row_int
-        else:
-            row_str = input('Sorry, please input a letter between A and ' +
-                            str(chr(64 + row_length)) + ': ').upper()
+        print('Sorry, please input a letter between A and ' +
+              str(chr(64 + row_length)) + ': ')
 
 
 def index_from_row_and_col(row, col, size):
