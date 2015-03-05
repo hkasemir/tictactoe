@@ -61,31 +61,39 @@ def get_row(player, board):
               str(chr(64 + row_length)) + ': ')
 
 
-def index_from_row_and_col(row, col, size):
-        return row*size + col
+def valid_move(row, col, board):
+    size = int(math.sqrt(len(board)))
+    index = row*size + col
+    return board[index] == 0
+
+    
+def make_move(row, col, board, key):
+    size = int(math.sqrt(len(board)))
+    index = row*size + col
+    board[index] = key
 
 
 def game_turn(player, board):
+    size = int(math.sqrt(len(board)))
     if player == 'Player':
-        size = int(math.sqrt(len(board)))
 
         while True:
             column = get_column(player, board)
             row = get_row(player, board)
-            index = index_from_row_and_col(row, column, size)
 
-            if board[index] == 0:
-                board[index] = 1
+            if valid_move(row, column, board):
+                make_move(row, column, board, 1)
                 return board
 
             print('Sorry, that spot\'s been taken, try again: ')
 
     elif player == 'Computer':
         while True:
-            index = random.randint(0, len(board)-1)
+            column = random.randint(0, size-1)
+            row = random.randint(0, size-1)
 
-            if board[index] == 0:
-                board[index] = -1
+            if valid_move(row, column, board):
+                make_move(row, column, board, -1)
                 return board
 
 
