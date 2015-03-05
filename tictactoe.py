@@ -36,23 +36,27 @@ def board_to_string(board):
 
 def get_column(player, board):
     row_length = int(math.sqrt(len(board)))
+
     while True:
         column_str = input(player + ' choose a column (1, 2, etc): ')
+
         if column_str.isnumeric() and\
            int(column_str) - 1 in range(row_length):
-            column = int(column_str) - 1
-            return column
+            return int(column_str) - 1
+
         print('Sorry, please input a number between 1 and ' +
               str(row_length) + ': ')
 
 
 def get_row(player, board):
     row_length = int(math.sqrt(len(board)))
+
     while True:
         row_str = input(player + ' choose a row (A, B, etc): ').upper()
+
         if ord(row_str) - 65 in range(row_length):
-            row_int = ord(row_str) - 65
-            return row_int
+            return ord(row_str) - 65
+
         print('Sorry, please input a letter between A and ' +
               str(chr(64 + row_length)) + ': ')
 
@@ -64,18 +68,22 @@ def index_from_row_and_col(row, col, size):
 def game_turn(player, board):
     if player == 'Player':
         size = int(math.sqrt(len(board)))
+
         while True:
             column = get_column(player, board)
             row = get_row(player, board)
             index = index_from_row_and_col(row, column, size)
+
             if board[index] == 0:
                 board[index] = 1
                 return board
-            else:
-                print('Sorry, that spot\'s been taken, try again: ')
+
+            print('Sorry, that spot\'s been taken, try again: ')
+
     elif player == 'Computer':
         while True:
             index = random.randint(0, len(board)-1)
+
             if board[index] == 0:
                 board[index] = -1
                 return board
@@ -99,7 +107,7 @@ def check_win(board):
         check_sum = 0
         for i in range(len(path)):
             check_sum += board[path[i]]
-        if check_sum == 3 or check_sum == -3:
+        if abs(check_sum) == 3:
             return True
     # Check for full board if no wins, indicates a tie
     if 0 not in board:
@@ -112,16 +120,16 @@ game_board = create_board(BOARD_SIZE)
 print(board_to_string(game_board))
 
 players = ['Player', 'Computer']
-game = True
-while game is True:
+game_complete = False
+while game_complete is False:
     for player in players:
         game_board = game_turn(player, game_board)
         print(board_to_string(game_board))
         if check_win(game_board):
             print(player + ' wins!')
-            game = False
+            game_complete = True
             break
         if check_win(game_board) is None:
             print('Catscratch! Nobody wins.')
-            game = False
+            game_complete = True
             break
