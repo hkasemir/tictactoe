@@ -42,12 +42,15 @@ def board_to_string(board):
 
     return board_str
 
+
 def get_column(board):
     while True:
         column_str = input('Choose a column (1, 2, etc): ')
+
         if column_str.isnumeric() and\
            int(column_str) - 1 in range(len(board)):
             return int(column_str) - 1
+
         print('Sorry, please input a number between 1 and ' +
               str(len(board)) + ': ')
 
@@ -97,10 +100,60 @@ def game_turn(player, board):
 
 
 IN_A_ROW_TO_WIN = 3
+DIRECTIONS = [
+    [0, 1],      # Check to the right
+    [1, 0],      # Check down the column
+    [1, 1],      # Check diagonal to the right
+    [1, -1]      # Check diagonal to the left
+]
 
 
+def check_win(board):
+    # Looks for a win (True)
+    for row in range(len(board)):
+        for column in range(len(board)):
+            pos = [row, column]
+            for direction in DIRECTIONS:
+                if check_win_for_cell(board, pos, direction):
+                    return True
 
-"""
+    # If there is an open cell, there is no win (False)
+    for row in board:
+        if 0 in row:
+            return False
+    # if there are no open cells, stale-mate (None)
+    return None
+
+
+def check_win_for_cell(board, pos, direction):
+    # Takes the character at the starting position
+    char = board[pos[0]][pos[1]]
+    # Does not need to continue to check if the character is 0
+    if char == 0:
+        return False
+    next_pos = pos
+    check_sum = 1
+    while True:
+        next_pos = [next_pos[0] + direction[0], next_pos[1] + direction[1]]
+
+        if next_pos[0] >= len(board):
+            break
+
+        if next_pos[1] >= len(board):
+            break
+
+        next_char = board[next_pos[0]][next_pos[1]]
+
+        if next_char != char:
+            break
+        check_sum +=1
+
+        if check_sum == IN_A_ROW_TO_WIN:
+            return True
+
+    return False
+
+
 print('Welcome to Heidi\'s Tic-Tac-Toe game!')
 
 game_board = create_board(BOARD_SIZE)
@@ -125,51 +178,3 @@ while game_complete is False:
             print('Catscratch! Nobody wins.')
             game_complete = True
             break
-"""
-directions = [
-    [0, 1],      # Check to the right
-    [1, 0],      # Check down the column
-    [1, 1],      # Check diagonal to the right
-    [1, -1]      # Check diagonal to the left
-]
-
-def check_win(board):
-    pos = [0, 0]
-    direction = [1, 0]
-    check_win_for_cell(board, pos, direction)
-
-def check_win_for_cell(board, pos, direction):
-
-    char = board[pos[0]][pos[1]]
-    if char == 0:
-        return False
-    next_pos = pos
-    check_sum = 1
-    while True:
-        next_pos = [next_pos[0] + direction[0], next_pos[1] + direction[1]]
-
-        if next_pos[0] >= len(board):
-            break
-
-        if next_pos[1] >= len(board):
-            break
-
-        next_char = board[next_pos[0]][next_pos[1]]
-
-        if next_char != char:
-            break
-        check_sum +=1
-
-        if check_sum == 3:
-            return True
-
-    return False
-
-board = [
-    [1,0,1,0],
-    [0,1,0,0],
-    [1,0,1,0],
-    [1,0,1,1],
-]
-
-print(check_win(board))
