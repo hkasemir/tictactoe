@@ -104,8 +104,11 @@ def check_win(board):
     # returns None if there is a tie.
     # check for 3 in a row
     for row in board: # row
-        if abs(sum(row)) == IN_A_ROW_TO_WIN:
-            return True
+        for i in row:
+            if i + IN_A_ROW_TO_WIN <= len(row):
+                if abs(sum(row[i + in_a_row] for in_a_row in range(IN_A_ROW_TO_WIN))) == IN_A_ROW_TO_WIN:
+                    return True
+
     # check for 3 in a column
     for col in range(len(board)):
         column_check_sum = 0
@@ -135,7 +138,7 @@ def check_win(board):
             return None
     return False
 
-
+"""
 print('Welcome to Heidi\'s Tic-Tac-Toe game!')
 
 game_board = create_board(BOARD_SIZE)
@@ -160,3 +163,51 @@ while game_complete is False:
             print('Catscratch! Nobody wins.')
             game_complete = True
             break
+"""
+directions = [
+    [0, 1],      # Check to the right
+    [1, 0],      # Check down the column
+    [1, 1],      # Check diagonal to the right
+    [1, -1]      # Check diagonal to the left
+]
+
+def check_win(board):
+    pos = [0, 0]
+    direction = [1, 0]
+    check_win_for_cell(board, pos, direction)
+
+def check_win_for_cell(board, pos, direction):
+
+    char = board[pos[0]][pos[1]]
+    if char == 0:
+        return False
+    next_pos = pos
+    check_sum = 1
+    while True:
+        next_pos = [next_pos[0] + direction[0], next_pos[1] + direction[1]]
+
+        if next_pos[0] >= len(board):
+            break
+
+        if next_pos[1] >= len(board):
+            break
+
+        next_char = board[next_pos[0]][next_pos[1]]
+
+        if next_char != char:
+            break
+        check_sum +=1
+
+        if check_sum == 3:
+            return True
+
+    return False
+
+board = [
+    [1,0,1,0],
+    [0,1,0,0],
+    [1,0,1,0],
+    [1,0,1,1],
+]
+
+print(check_win(board))
