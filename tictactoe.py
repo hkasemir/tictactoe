@@ -98,45 +98,7 @@ def game_turn(player, board):
 
 IN_A_ROW_TO_WIN = 3
 
-def check_win(board):
-    # To be called after player and computer turns. Returns True if 3 in a row 
-    # is made from turn just played. Returns False if no win is detected, and 
-    # returns None if there is a tie.
-    # check for 3 in a row
-    for row in board: # row
-        for i in row:
-            if i + IN_A_ROW_TO_WIN <= len(row):
-                if abs(sum(row[i + in_a_row] for in_a_row in range(IN_A_ROW_TO_WIN))) == IN_A_ROW_TO_WIN:
-                    return True
 
-    # check for 3 in a column
-    for col in range(len(board)):
-        column_check_sum = 0
-        for row in range(len(board)):
-            column_check_sum += board[row][col]
-        if abs(column_check_sum) == IN_A_ROW_TO_WIN:
-            return True
-    # check for diagonals down and right:
-    diagonal_check_sum = 0
-    for i in range(len(board)):
-        diagonal_check_sum += board[i][i]
-        if abs(diagonal_check_sum) == IN_A_ROW_TO_WIN:
-            return True
-    # check for diagonals down and left:
-    diagonal_check_sum = 0
-    for i in range(len(board)):
-        diagonal_check_sum += board[len(board)-1 - i][i]
-        if abs(diagonal_check_sum) == IN_A_ROW_TO_WIN:
-            return True
-
-    # Check for full board if no wins, indicates a tie
-    full_row = 0
-    for row in board:
-        if 0 not in row:
-            full_row += 1
-        if full_row == len(board):
-            return None
-    return False
 
 """
 print('Welcome to Heidi\'s Tic-Tac-Toe game!')
