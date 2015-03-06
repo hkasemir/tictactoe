@@ -90,11 +90,11 @@ def get_choice(player, board):
 def game_turn(player, board):
     while True:
         row, column = get_choice(player, board)
-        
+
         if valid_move(row, column, board):
             make_move(row, column, board, player)
             return board
-        
+
         if player == 'Player':
             print('Sorry, that spot\'s been taken, try again: ')
 
@@ -131,22 +131,23 @@ def check_win_for_cell(board, pos, direction):
     # Does not need to continue to check if the character is 0
     if char == 0:
         return False
-    next_pos = pos
+    # check_sum counts how many in a row we have of the same character
     check_sum = 1
     while True:
-        next_pos = [next_pos[0] + direction[0], next_pos[1] + direction[1]]
+        # increment position in direction
+        pos = [pos[0] + direction[0], pos[1] + direction[1]]
 
-        if next_pos[0] >= len(board):
+        # Break if we reach the end of the board
+        if pos[0] >= len(board) or pos[1] >= len(board):
             break
 
-        if next_pos[1] >= len(board):
-            break
+        # define the adjacent character to compare
+        next_char = board[pos[0]][pos[1]]
 
-        next_char = board[next_pos[0]][next_pos[1]]
-
+        # break if the characters are different
         if next_char != char:
             break
-        check_sum +=1
+        check_sum += 1
 
         if check_sum == IN_A_ROW_TO_WIN:
             return True
