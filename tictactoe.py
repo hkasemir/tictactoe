@@ -42,78 +42,90 @@ def board_to_string(board):
 
     return board_str
 
-def get_column(player, board):
-    column_str = input(player + ' choose a column (1, 2, etc): ')
+def get_column(board):
     while True:
+        column_str = input('Choose a column (1, 2, etc): ')
         if column_str.isnumeric() and\
            int(column_str) - 1 in range(len(board)):
-            column = int(column_str) - 1
-            return column
-        column_str = input('Sorry, please input a number between 1 and ' +
-                           str(len(board)) + ': ')
+            return int(column_str) - 1
+        print('Sorry, please input a number between 1 and ' +
+              str(len(board)) + ': ')
 
 
-def get_row(player, board):
-    row_str = input(player + ' choose a row (A, B, etc): ').upper()
+def get_row(board):
     while True:
+        row_str = input('Choose a row (A, B, etc): ').upper()
         if row_str in row_alpha:
-            row_int = ord(row_str) - 65
-            return row_int
-        row_str = input('Sorry, please input a letter between A and ' +
-                        str(row_alpha[len(board)-1]) + ': ').upper()
+            return ord(row_str) - 65
+        print('Sorry, please input a letter between A and ' +
+              str(row_alpha[len(board)-1]) + ': ')
 
 
-def player_turn(player, board):
+def valid_move(row, col, board):
+    return board[row][col] == 0
+
+
+def make_move(row, col, board, player):
+    if player == 'Player':
+        board[row][col] = 1
+    elif player == 'Computer':
+        board[row][col] = -1
+
+
+def get_choice(player, board):
+    if player == 'Player':
+        column = get_column(board)
+        row = get_row(board)
+
+    elif player == 'Computer':
+        column = random.randint(0, len(board) - 1)
+        row = random.randint(0, len(board) - 1)
+
+    return row, column
+
+
+def game_turn(player, board):
     while True:
-        column = get_column(player, board)
-        row = get_row(player, board)
-        if board[row][column] == 0:
-            board[row][column] = 1
-            return board
-        print('Sorry, that spot\'s been taken, try again: ')
+        row, column = get_choice(player, board)
         
-
-def computer_turn(board):
-    while True:
-        row = random.randint(0, (BOARD_SIZE-1))
-        column = random.randint(0, (BOARD_SIZE-1))
-        if board[row][column] == 0:
-            board[row][column] = -1
+        if valid_move(row, column, board):
+            make_move(row, column, board, player)
             return board
+        
+        if player == 'Player':
+            print('Sorry, that spot\'s been taken, try again: ')
 
 
 IN_A_ROW_TO_WIN = 3
-
 
 def check_win(board):
     # To be called after player and computer turns. Returns True if 3 in a row 
     # is made from turn just played. Returns False if no win is detected, and 
     # returns None if there is a tie.
     # check for 3 in a row
-    for i in range(len(board)): # row
-        key = board[i][0]
-        if key != 0 and\
-           board[i][1] == key and\
-           board[i][2] == key:
+    for row in board: # row
+        if abs(sum(row)) == IN_A_ROW_TO_WIN:
             return True
     # check for 3 in a column
-    for j in range(len(board)):
-        key = board[0][j]
-        if key != 0 and\
-           board[1][j] == key and\
-           board[2][j] == key:
+    for col in range(len(board)):
+        column_check_sum = 0
+        for row in range(len(board)):
+            column_check_sum += board[row][col]
+        if abs(column_check_sum) == IN_A_ROW_TO_WIN:
             return True
-    # check for diagonals
-    key = board[0][0]
-    if key != 0 and\
-       board[1][1] == key and\
-       board[2][2] == key:
-        return True
-    key = board[2][0]
-    if key != 0 and\
-       board[1][1] == key and\
-       board[0][2] == key:
-        return True
+    # check for diagonals down and right:
+    diagonal_check_sum = 0
+    for i in range(len(board)):
+        diagonal_check_sum += board[i][i]
+        if abs(diagonal_check_sum) == IN_A_ROW_TO_WIN:
+            return True
+    # check for diagonals down and left:
+    diagonal_check_sum = 0
+    for i in range(len(board)):
+        diagonal_check_sum += board[len(board)-1 - i][i]
+        if abs(diagonal_check_sum) == IN_A_ROW_TO_WIN:
+            return True
+
     # Check for full board if no wins, indicates a tie
     full_row = 0
     for row in board:
@@ -123,24 +135,28 @@ def check_win(board):
             return None
     return False
 
+
 print('Welcome to Heidi\'s Tic-Tac-Toe game!')
+
 game_board = create_board(BOARD_SIZE)
 print(board_to_string(game_board))
 
-while True:
-    game_board = player_turn('Player 1', game_board)
-    print(board_to_string(game_board))
-    if check_win(game_board):
-        print('Player wins!')
-        break
-    if check_win(game_board) is None:
-        print('Catscratch! Nobody wins.')
-        break
-    game_board = computer_turn(game_board)
-    print(board_to_string(game_board))
-    if check_win(game_board):
-        print('Computer wins!')
-        break
-    if check_win(game_board) is None:
-        print('Catscratch! Nobody wins.')
-        break
+players = ['Player', 'Computer']
+game_complete = False
+
+while game_complete is False:
+    for player in players:
+        print('Turn: ' + player)
+        game_board = game_turn(player, game_board)
+        print(board_to_string(game_board))
+        turn_result = check_win(game_board)
+
+        if turn_result:
+            print(player + ' wins!')
+            game_complete = True
+            break
+
+        if turn_result is None:
+            print('Catscratch! Nobody wins.')
+            game_complete = True
+            break
